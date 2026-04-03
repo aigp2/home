@@ -19,6 +19,7 @@
   --radius-xl: 30px;
   --radius-lg: 22px;
   --radius-md: 14px;
+  --footer-h: 56px;
 }
 
 * {
@@ -27,7 +28,9 @@
 
 html,
 body {
-  min-height: 100%;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 body {
@@ -39,7 +42,7 @@ body {
   background-size: 320% 320%;
   animation: bg-pan 10s ease-in-out infinite;
   background-attachment: fixed;
-  overflow-x: hidden;
+  overflow: hidden;
   position: relative;
 }
 
@@ -108,8 +111,12 @@ body.modal-open {
 .app {
   width: min(960px, calc(100% - 1.4rem));
   margin: 0 auto;
-  padding: 1rem 0 3.4rem;
+  padding: 0.72rem 0 0.66rem;
+  height: calc(100dvh - var(--footer-h) - env(safe-area-inset-bottom));
   position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   animation: app-float 6.8s ease-in-out infinite;
 }
 
@@ -176,7 +183,10 @@ body.modal-open {
 }
 
 .screen-wrap {
-  margin-top: 0.62rem;
+  margin-top: 0.48rem;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .screen {
@@ -184,14 +194,17 @@ body.modal-open {
   text-align: left;
   padding: 0;
   position: static;
-  overflow: visible;
+  overflow: hidden;
   animation: screen-in 0.42s ease;
-  gap: 0.72rem;
+  gap: 0.56rem;
+  height: 100%;
+  align-content: start;
 }
 
 .screen.active {
   display: grid;
   animation: screen-in 0.42s ease;
+  grid-auto-rows: min-content;
 }
 
 .screen h2 {
@@ -259,7 +272,7 @@ body.modal-open {
   box-shadow: 0 18px 30px rgba(122, 86, 185, 0.12);
   backdrop-filter: blur(14px) saturate(1.14);
   -webkit-backdrop-filter: blur(14px) saturate(1.14);
-  padding: clamp(0.95rem, 2.8vw, 1.55rem);
+  padding: clamp(0.8rem, 2.4vw, 1.3rem);
   animation: soft-float 10s ease-in-out infinite;
 }
 
@@ -296,23 +309,24 @@ body.modal-open {
 }
 
 .welcome-hero h2 {
-  margin-top: 0.58rem;
+  margin-top: 0.45rem;
 }
 
 .welcome-hero p {
-  margin-top: 0.68rem;
+  margin-top: 0.5rem;
   color: #665a84;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  line-height: 1.62;
 }
 
 .daily-limit-banner {
-  margin-top: 0.88rem;
+  margin-top: 0.52rem;
   border-radius: 12px;
   border: 0;
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  padding: 0.62rem 0.78rem;
+  padding: 0.45rem 0.62rem;
 }
 
 .daily-limit-banner p {
@@ -332,9 +346,9 @@ body.modal-open {
 }
 
 .start-action {
-  margin-top: 0.98rem;
+  margin-top: 0.56rem;
   display: flex;
-  padding: 0.62rem;
+  padding: 0.45rem;
 }
 
 .start-action .btn-main {
@@ -431,8 +445,8 @@ body.modal-open {
 }
 
 .upload {
-  margin-top: 0.92rem;
-  min-height: 265px;
+  margin-top: 0.55rem;
+  min-height: clamp(152px, 24dvh, 220px);
   border-radius: 22px;
   border: 1.5px dashed rgba(149, 122, 198, 0.58);
   background:
@@ -493,9 +507,9 @@ body.modal-open {
 }
 
 .name-field {
-  margin-top: 0.98rem;
+  margin-top: 0.56rem;
   display: block;
-  padding: 0.74rem;
+  padding: 0.56rem;
 }
 
 .name-field span {
@@ -508,7 +522,7 @@ body.modal-open {
 
 .name-field input {
   width: 100%;
-  min-height: 50px;
+  min-height: 44px;
   border-radius: 13px;
   border: 1px solid rgba(156, 132, 197, 0.4);
   background: rgba(255, 255, 255, 0.78);
@@ -526,28 +540,28 @@ body.modal-open {
 }
 
 .two-btn {
-  margin-top: 0.95rem;
+  margin-top: 0.56rem;
   display: grid;
   grid-template-columns: 1fr 1.3fr;
   gap: 0.6rem;
-  padding: 0.62rem;
+  padding: 0.45rem;
 }
 
 .analysis-stage {
-  margin-top: 0.86rem;
+  margin-top: 0.52rem;
   border-radius: var(--radius-lg);
   border: 0;
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  padding: 0.95rem;
+  padding: 0.7rem;
   animation: soft-float 9s ease-in-out infinite;
 }
 
 .visual-core {
   position: relative;
-  min-height: 230px;
+  min-height: clamp(150px, 25dvh, 220px);
   border-radius: 17px;
   border: 1px solid rgba(161, 141, 203, 0.44);
   overflow: hidden;
@@ -634,7 +648,7 @@ body.modal-open {
 }
 
 #progressText {
-  margin: 0.84rem 0 0;
+  margin: 0.58rem 0 0;
   text-align: center;
   color: #6f628f;
   font-size: 0.88rem;
@@ -674,7 +688,7 @@ body.modal-open {
 }
 
 .phase-track {
-  margin: 0.82rem 0 0;
+  margin: 0.5rem 0 0;
   padding: 0;
   list-style: none;
   display: grid;
@@ -718,14 +732,14 @@ body.modal-open {
 }
 
 .result-card {
-  margin-top: 0.88rem;
+  margin-top: 0.52rem;
   border-radius: var(--radius-lg);
   border: 0;
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  padding: 0.96rem;
+  padding: 0.68rem;
   animation: soft-float 9.5s ease-in-out infinite;
 }
 
@@ -735,14 +749,14 @@ body.modal-open {
 }
 
 .result-gate {
-  margin-top: 0.86rem;
+  margin-top: 0.5rem;
   border-radius: 14px;
   border: 0;
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: none;
-  padding: 0.84rem;
+  padding: 0.62rem;
 }
 
 .result-gate p {
@@ -771,16 +785,17 @@ body.modal-open {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.58rem;
-  padding: 0.64rem 0.9rem calc(0.7rem + env(safe-area-inset-bottom));
+  min-height: var(--footer-h);
+  padding: 0.52rem 0.84rem calc(0.56rem + env(safe-area-inset-bottom));
   border-top: 2px solid rgba(116, 82, 181, 0.56);
   background: rgba(255, 251, 255, 0.96);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 -8px 18px rgba(85, 59, 139, 0.13);
   color: #6f648f;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   animation: footer-float 5s ease-in-out infinite;
 }
 
@@ -790,13 +805,18 @@ body.modal-open {
   border-bottom: 1px solid rgba(111, 100, 143, 0.28);
 }
 
+.site-fixed-footer span,
+.site-fixed-footer a {
+  white-space: nowrap;
+}
+
 .score-circle {
   --score-progress: 0;
   position: relative;
   overflow: hidden;
-  width: 146px;
-  height: 146px;
-  margin: 0 auto 0.88rem;
+  width: 124px;
+  height: 124px;
+  margin: 0 auto 0.5rem;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -825,7 +845,7 @@ body.modal-open {
   position: relative;
   z-index: 1;
   font-family: "Bebas Neue", sans-serif;
-  font-size: 2.9rem;
+  font-size: 2.3rem;
   line-height: 1;
   letter-spacing: 0.04em;
   color: #3a2f63;
@@ -892,7 +912,7 @@ body.modal-open {
 }
 
 .bars {
-  margin-top: 0.64rem;
+  margin-top: 0.48rem;
 }
 
 .bars p {
@@ -919,17 +939,17 @@ body.modal-open {
 }
 
 .stamp {
-  margin-top: 0.58rem;
+  margin-top: 0.4rem;
   color: #897ea9;
   font-size: 0.76rem;
 }
 
 .result-actions {
-  margin-top: 0.88rem;
+  margin-top: 0.52rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.58rem;
-  padding: 0.62rem;
+  gap: 0.45rem;
+  padding: 0.45rem;
 }
 
 .modal {
@@ -941,7 +961,7 @@ body.modal-open {
   padding: calc(0.9rem + env(safe-area-inset-top)) 0.9rem calc(0.9rem + env(safe-area-inset-bottom));
   background: rgba(34, 20, 58, 0.44);
   backdrop-filter: blur(6px);
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .modal[hidden] {
@@ -950,20 +970,20 @@ body.modal-open {
 
 .modal-card {
   width: min(500px, 100%);
-  max-height: min(780px, calc(100svh - 1.8rem - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+  max-height: min(760px, calc(100svh - 1.8rem - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
   border-radius: 24px;
   border: 1px solid rgba(174, 148, 215, 0.32);
   background: var(--card-strong);
   box-shadow: 0 24px 56px rgba(51, 30, 82, 0.28);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  padding: 1rem;
+  padding: 0.82rem;
   animation: modal-in 0.28s ease;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .section-head {
-  padding: 0.86rem 1rem;
+  padding: 0.58rem 0.72rem;
 }
 
 .section-head h2 {
@@ -999,16 +1019,16 @@ body.modal-open {
 }
 
 .notice-points {
-  margin-top: 0.68rem;
+  margin-top: 0.46rem;
   display: grid;
-  gap: 0.48rem;
+  gap: 0.36rem;
 }
 
 .notice-points article {
   border-radius: 13px;
   border: 1px solid rgba(168, 142, 210, 0.32);
   background: rgba(255, 255, 255, 0.76);
-  padding: 0.56rem 0.64rem;
+  padding: 0.4rem 0.48rem;
 }
 
 .notice-points h4 {
@@ -1018,26 +1038,26 @@ body.modal-open {
 }
 
 .notice-points p {
-  margin: 0.2rem 0 0;
+  margin: 0.14rem 0 0;
   color: #6f6492;
-  font-size: 0.83rem;
-  line-height: 1.56;
+  font-size: 0.79rem;
+  line-height: 1.45;
 }
 
 .agree {
-  margin-top: 0.72rem;
+  margin-top: 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.45rem;
   color: #4d406f;
-  font-size: 0.87rem;
+  font-size: 0.81rem;
 }
 
 .modal-actions {
-  margin-top: 0.78rem;
+  margin-top: 0.52rem;
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  gap: 0.52rem;
+  gap: 0.42rem;
 }
 
 @keyframes screen-in {
@@ -1373,10 +1393,14 @@ body.modal-open {
 }
 
 @media (max-width: 700px) {
+  :root {
+    --footer-h: 54px;
+  }
+
   .app {
     width: calc(100% - 1.1rem);
-    padding-top: 0.72rem;
-    padding-bottom: 5.9rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.46rem;
   }
 
   .screen {
@@ -1392,7 +1416,7 @@ body.modal-open {
   }
 
   .screen h2 {
-    font-size: clamp(1.62rem, 7.4vw, 2.04rem);
+    font-size: clamp(1.3rem, 6.7vw, 1.84rem);
   }
 
   .welcome-hero {
@@ -1400,34 +1424,37 @@ body.modal-open {
   }
 
   .welcome-hero p {
-    font-size: 0.92rem;
-    line-height: 1.72;
+    font-size: 0.82rem;
+    line-height: 1.52;
   }
 
   .upload {
-    min-height: 210px;
+    min-height: clamp(132px, 21dvh, 170px);
   }
 
-  .two-btn,
-  .result-actions,
-  .modal-actions {
+  .two-btn {
     grid-template-columns: 1fr;
   }
 
+  .result-actions,
+  .modal-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .score-circle {
-    width: 136px;
-    height: 136px;
+    width: 108px;
+    height: 108px;
   }
 
   .score-circle strong {
-    font-size: 2.58rem;
+    font-size: 2rem;
   }
 
   .site-fixed-footer {
-    font-size: 0.75rem;
-    gap: 0.42rem;
-    padding: 0.66rem 0.62rem calc(0.72rem + env(safe-area-inset-bottom));
-    line-height: 1.4;
+    font-size: 0.69rem;
+    gap: 0.34rem;
+    padding: 0.46rem 0.56rem calc(0.5rem + env(safe-area-inset-bottom));
+    line-height: 1.25;
   }
 
   .modal {
@@ -1436,7 +1463,7 @@ body.modal-open {
 
   .modal-card {
     max-height: calc(100svh - 1.1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-    padding: 0.8rem;
+    padding: 0.66rem;
     border-radius: 16px;
   }
 
@@ -1449,13 +1476,47 @@ body.modal-open {
   }
 
   .notice-points p {
-    font-size: 0.8rem;
-    line-height: 1.5;
+    font-size: 0.74rem;
+    line-height: 1.38;
   }
 
   .modal-actions {
-    margin-top: 0.62rem;
-    gap: 0.45rem;
+    margin-top: 0.52rem;
+    gap: 0.36rem;
+  }
+}
+
+@media (max-height: 760px) {
+  .header-logo {
+    font-size: 1.06rem;
+  }
+
+  .header-links a {
+    font-size: 0.7rem;
+  }
+
+  .screen {
+    gap: 0.46rem;
+  }
+
+  .section-head {
+    padding: 0.46rem 0.6rem;
+  }
+
+  .upload {
+    min-height: clamp(112px, 19dvh, 150px);
+  }
+
+  .visual-core {
+    min-height: clamp(122px, 21dvh, 180px);
+  }
+
+  .phase-track li {
+    font-size: 0.76rem;
+  }
+
+  .result-main h3 {
+    font-size: clamp(1.08rem, 4.8vw, 1.46rem);
   }
 }
 
