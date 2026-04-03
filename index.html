@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Charm Scope | 顔タイプ診断アプリ</title>
+    <meta
+      name="description"
+      content="スマホ向けの顔タイプ診断エンタメサイト。写真と名前を入力して診断結果を表示します。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="bg-shape bg-a"></div>
+    <div class="bg-shape bg-b"></div>
+
+    <main class="app">
+      <header class="app-header">
+        <p class="header-logo">CHARM SCOPE</p>
+        <div class="header-links">
+          <a href="./terms.html">利用規約</a>
+          <a href="./privacy.html">プライバシーポリシー</a>
+        </div>
+      </header>
+
+      <section class="screen-wrap">
+        <section class="screen active" data-screen="welcome">
+          <div class="welcome-hero glass-panel">
+            <p class="welcome-kicker">TODAY'S FACE CHECK</p>
+            <h2>今日の可愛さ、<br />スコアで残そう。</h2>
+            <p>
+              写真を選んで、あなたの雰囲気タイプをチェック。<br />1日1回制度は運用中ですが、現在は試験段階のため制限を停止しています。
+            </p>
+          </div>
+          <div class="daily-limit-banner glass-panel" id="dailyLimitBanner">
+            <p id="dailyLimitText">この診断は1日1回までです。</p>
+          </div>
+          <div class="start-action glass-panel">
+            <button class="btn-main" id="startBtn">今すぐ診断する</button>
+          </div>
+          <div class="start-legal">
+            <span>© 2026 Charm Scope</span>
+            <a href="./terms.html">利用規約</a>
+            <a href="./privacy.html">プライバシーポリシー</a>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="photo">
+          <div class="section-head glass-panel">
+            <h2>写真と名前を入力</h2>
+            <p>無加工・正面に近い写真を推奨します。</p>
+          </div>
+
+          <label class="upload glass-panel" id="uploadArea">
+            <input id="photoInput" type="file" accept="image/*" />
+            <span class="upload-guide" id="uploadGuide">
+              タップして写真を選ぶ<br /><small>JPG / PNG / HEIC</small>
+            </span>
+            <img id="preview" alt="プレビュー" hidden />
+          </label>
+
+          <label class="name-field glass-panel">
+            <span>あなたの名前（本名）</span>
+            <input
+              id="userName"
+              type="text"
+              maxlength="20"
+              placeholder="例: 山田 太郎"
+              autocomplete="name"
+            />
+          </label>
+
+          <div class="two-btn glass-panel">
+            <button class="btn-sub" id="backToWelcomeBtn">戻る</button>
+            <button class="btn-main" id="analyzeBtn" disabled>解析へ進む</button>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="analyze">
+          <div class="section-head glass-panel">
+            <h2>解析中</h2>
+            <p>複数フェーズを実行中です。完了までしばらくお待ちください。</p>
+          </div>
+
+          <div class="analysis-stage glass-panel">
+            <div class="visual-core">
+              <img id="analyzePreview" alt="解析対象画像" hidden />
+              <div id="analyzePlaceholder" class="visual-placeholder">ANALYSIS FEED</div>
+              <div class="grid-overlay"></div>
+              <div class="scan-line"></div>
+              <div class="radar">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="pulse-dot"></div>
+            </div>
+
+            <p id="progressText">初期化しています...</p>
+            <div class="progress">
+              <span id="progressFill"></span>
+            </div>
+
+            <ul class="phase-track">
+              <li data-phase="0">画像品質を確認</li>
+              <li data-phase="1">顔領域を抽出</li>
+              <li data-phase="2">特徴ベクトルを生成</li>
+              <li data-phase="3">モデル推定を実行</li>
+              <li data-phase="4">結果を整形</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="screen" data-screen="result">
+          <div class="section-head glass-panel">
+            <h2>診断結果</h2>
+          </div>
+          <div class="result-gate glass-panel" id="resultGate">
+            <p>結果を表示するには、このサイトを共有してください。</p>
+            <button class="btn-main" id="unlockShareBtn">共有して結果を表示</button>
+          </div>
+          <article class="result-card glass-panel">
+            <div class="score-circle">
+              <strong id="score">0</strong>
+              <span>偏差値</span>
+            </div>
+            <div class="result-main">
+              <p class="target">診断対象: <span id="resultName">-</span></p>
+              <p class="rank" id="rank">RANK -</p>
+              <h3 id="type">-</h3>
+              <p id="comment">-</p>
+              <ul id="tags" class="tag-list"></ul>
+              <div class="bars">
+                <p>清潔感 <span id="cleanVal">0</span></p>
+                <div><i id="cleanBar"></i></div>
+                <p>印象強度 <span id="impactVal">0</span></p>
+                <div><i id="impactBar"></i></div>
+                <p>バランス <span id="balanceVal">0</span></p>
+                <div><i id="balanceBar"></i></div>
+              </div>
+              <p class="stamp">生成時刻: <span id="timestamp"></span></p>
+            </div>
+          </article>
+          <div class="result-actions glass-panel">
+            <button class="btn-main" id="saveBtn">結果を画像で保存</button>
+            <button class="btn-sub" id="shareBtn">サイトをシェア</button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-fixed-footer">
+      <span>© 2026 Charm Scope</span>
+      <a href="./terms.html">利用規約</a>
+      <a href="./privacy.html">プライバシーポリシー</a>
+    </footer>
+
+    <div class="modal" id="noticeModal" hidden>
+      <div class="modal-card">
+        <p class="modal-chip">BEFORE START</p>
+        <h3>診断前のご案内</h3>
+        <p class="modal-lead">
+          気持ちよく使えるよう、以下を確認してから進んでください。
+        </p>
+        <div class="notice-points">
+          <article>
+            <h4>1日1回制限</h4>
+            <p>1日1回制度を導入予定です。現在は試験段階のため制限を停止しています。</p>
+          </article>
+          <article>
+            <h4>写真について</h4>
+            <p>無加工・正面に近い写真を推奨します。</p>
+          </article>
+          <article>
+            <h4>結果について</h4>
+            <p>同じ写真でも診断タイミングにより結果が変動する場合があります。</p>
+          </article>
+        </div>
+        <label class="agree">
+          <input type="checkbox" id="agreeCheck" />
+          <span>利用規約・プライバシーポリシーに同意して進みます。</span>
+        </label>
+        <div class="modal-actions">
+          <button class="btn-sub" id="cancelNoticeBtn">閉じる</button>
+          <button class="btn-main" id="confirmNoticeBtn" disabled>同意して進む</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
