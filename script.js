@@ -17,9 +17,13 @@ const resultGate = document.getElementById("resultGate");
 const resultCard = document.querySelector(".result-card");
 const resultActions = document.querySelector(".result-actions");
 
-const uploadArea = document.getElementById("uploadArea");
-const uploadGuide = document.getElementById("uploadGuide");
-const photoInput = document.getElementById("photoInput");
+const cameraPermissionText = document.getElementById("cameraPermissionText");
+const cameraVideo = document.getElementById("cameraVideo");
+const requestCameraBtn = document.getElementById("requestCameraBtn");
+const captureBtn = document.getElementById("captureBtn");
+const retakeBtn = document.getElementById("retakeBtn");
+const cameraFallbackInput = document.getElementById("cameraFallbackInput");
+const fallbackCameraBtn = document.getElementById("fallbackCameraBtn");
 const preview = document.getElementById("preview");
 const analyzePreview = document.getElementById("analyzePreview");
 const analyzePlaceholder = document.getElementById("analyzePlaceholder");
@@ -53,6 +57,7 @@ let currentScreen = "welcome";
 let currentResult = null;
 let pendingResult = null;
 let resultUnlocked = false;
+let cameraStream = null;
 
 const resultPatterns = [
   {
@@ -294,10 +299,14 @@ function updateDailyLimitUI() {
 }
 
 function setScreen(name) {
+  const previous = currentScreen;
   currentScreen = name;
   screens.forEach((screen) => {
     screen.classList.toggle("active", screen.dataset.screen === name);
   });
+  if (previous === "photo" && name !== "photo") {
+    stopCameraStream();
+  }
 }
 
 function openNoticeModal() {
@@ -322,18 +331,111 @@ function validateInput() {
   analyzeBtn.disabled = !(hasPhoto && hasName);
 }
 
+function stopCameraStream() {
+  if (!cameraStream) return;
+  cameraStream.getTracks().forEach((track) => track.stop());
+  cameraStream = null;
+  if (cameraVideo) cameraVideo.srcObject = null;
+}
+
+async function startCamera() {
+  if (!cameraVideo) return;
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    if (cameraPermissionText) {
+      cameraPermissionText.textContent =
+        "この端末ではカメラAPIが利用できません。下のボタンからカメラ起動を試してください。";
+    }
+    return;
+  }
+
+  stopCameraStream();
+
+  try {
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          facingMode: { exact: "user" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      });
+    } catch (_strictError) {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          facingMode: { ideal: "user" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      });
+    }
+
+    cameraStream = stream;
+    cameraVideo.srcObject = stream;
+    cameraVideo.hidden = false;
+    preview.hidden = true;
+    captureBtn.disabled = false;
+    retakeBtn.hidden = true;
+
+    if (cameraPermissionText) {
+      cameraPermissionText.textContent =
+        "カメラアクセスを許可ありがとうございます。内カメラで撮影して進んでください。";
+    }
+
+    await cameraVideo.play();
+  } catch (error) {
+    captureBtn.disabled = true;
+    if (cameraPermissionText) {
+      if (error && error.name === "NotAllowedError") {
+        cameraPermissionText.textContent =
+          "カメラアクセスが拒否されました。ブラウザ設定でカメラを許可してから再試行してください。";
+      } else {
+        cameraPermissionText.textContent =
+          "カメラを起動できませんでした。通信環境とブラウザ設定を確認し、再試行してください。";
+      }
+    }
+  }
+}
+
+function setCapturedPhoto(src) {
+  stopCameraStream();
+  preview.src = src;
+  preview.hidden = false;
+  if (cameraVideo) cameraVideo.hidden = true;
+  analyzePreview.src = src;
+  analyzePreview.hidden = false;
+  analyzePlaceholder.hidden = true;
+  captureBtn.disabled = true;
+  retakeBtn.hidden = false;
+  validateInput();
+}
+
+function capturePhoto() {
+  if (!cameraVideo || !cameraStream) return;
+  const width = cameraVideo.videoWidth;
+  const height = cameraVideo.videoHeight;
+  if (!width || !height) return;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  ctx.drawImage(cameraVideo, 0, 0, width, height);
+  const src = canvas.toDataURL("image/jpeg", 0.95);
+  setCapturedPhoto(src);
+  stopCameraStream();
+}
+
 function updatePreview(file) {
   if (!file || !file.type.startsWith("image/")) return;
   const reader = new FileReader();
   reader.onload = () => {
-    const src = String(reader.result);
-    preview.src = src;
-    preview.hidden = false;
-    uploadGuide.hidden = true;
-    analyzePreview.src = src;
-    analyzePreview.hidden = false;
-    analyzePlaceholder.hidden = true;
-    validateInput();
+    setCapturedPhoto(String(reader.result));
   };
   reader.readAsDataURL(file);
 }
@@ -732,32 +834,29 @@ confirmNoticeBtn.addEventListener("click", () => {
     return;
   }
   setScreen("photo");
+  startCamera();
 });
 
 backToWelcomeBtn.addEventListener("click", () => {
   setScreen("welcome");
 });
 
-photoInput.addEventListener("change", (event) => {
+requestCameraBtn.addEventListener("click", startCamera);
+captureBtn.addEventListener("click", capturePhoto);
+retakeBtn.addEventListener("click", () => {
+  preview.hidden = true;
+  preview.src = "";
+  analyzePreview.hidden = true;
+  analyzePreview.src = "";
+  analyzePlaceholder.hidden = false;
+  validateInput();
+  startCamera();
+});
+cameraFallbackInput.addEventListener("change", (event) => {
   updatePreview(event.target.files?.[0]);
 });
-
-["dragenter", "dragover"].forEach((name) => {
-  uploadArea.addEventListener(name, (event) => {
-    event.preventDefault();
-    uploadArea.classList.add("dragging");
-  });
-});
-
-["dragleave", "drop"].forEach((name) => {
-  uploadArea.addEventListener(name, (event) => {
-    event.preventDefault();
-    uploadArea.classList.remove("dragging");
-  });
-});
-
-uploadArea.addEventListener("drop", (event) => {
-  updatePreview(event.dataTransfer?.files?.[0]);
+fallbackCameraBtn.addEventListener("click", () => {
+  cameraFallbackInput.click();
 });
 
 userName.addEventListener("input", validateInput);
@@ -765,6 +864,7 @@ analyzeBtn.addEventListener("click", runAnalysis);
 saveBtn.addEventListener("click", saveResult);
 shareBtn.addEventListener("click", shareSite);
 if (unlockShareBtn) unlockShareBtn.addEventListener("click", shareSite);
+window.addEventListener("beforeunload", stopCameraStream);
 
 setScreen("welcome");
 validateInput();
