@@ -54,16 +54,28 @@
         <section class="screen" data-screen="photo">
           <div class="section-head glass-panel">
             <h2>写真と名前を入力</h2>
-            <p>無加工・正面に近い写真を推奨します。</p>
+            <p>内カメラで撮影後、プレビューを確認して名前を入力します。</p>
           </div>
 
-          <label class="upload glass-panel" id="uploadArea">
-            <input id="photoInput" type="file" accept="image/*" />
-            <span class="upload-guide" id="uploadGuide">
-              タップして写真を選ぶ<br /><small>JPG / PNG / HEIC</small>
-            </span>
-            <img id="preview" alt="プレビュー" hidden />
-          </label>
+          <div class="camera-panel glass-panel" id="cameraPanel">
+            <p class="camera-permission" id="cameraPermissionText">
+              iPhoneでの利用時はカメラアクセスを求められたら「許可」を選択してください。
+            </p>
+            <div class="camera-stage">
+              <video id="cameraVideo" autoplay muted playsinline hidden></video>
+              <img id="preview" alt="プレビュー" hidden />
+              <div class="camera-grid"></div>
+            </div>
+            <div class="camera-actions">
+              <button class="btn-sub" id="requestCameraBtn" type="button">カメラを開始</button>
+              <button class="btn-main" id="captureBtn" type="button" disabled>撮影する</button>
+              <button class="btn-sub" id="retakeBtn" type="button" hidden>撮り直す</button>
+            </div>
+            <input id="cameraFallbackInput" type="file" accept="image/*" capture="user" hidden />
+            <button class="camera-fallback" id="fallbackCameraBtn" type="button">
+              カメラが開かない場合はこちら
+            </button>
+          </div>
 
           <label class="name-field glass-panel">
             <span>あなたの名前（本名）</span>
