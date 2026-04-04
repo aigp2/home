@@ -5,6 +5,12 @@ const noticeModal = document.getElementById("noticeModal");
 const agreeCheck = document.getElementById("agreeCheck");
 const cancelNoticeBtn = document.getElementById("cancelNoticeBtn");
 const confirmNoticeBtn = document.getElementById("confirmNoticeBtn");
+const analyzeCheckModal = document.getElementById("analyzeCheckModal");
+const checkOwnPhoto = document.getElementById("checkOwnPhoto");
+const checkNoFilter = document.getElementById("checkNoFilter");
+const checkFaceVisible = document.getElementById("checkFaceVisible");
+const cancelAnalyzeCheckBtn = document.getElementById("cancelAnalyzeCheckBtn");
+const confirmAnalyzeCheckBtn = document.getElementById("confirmAnalyzeCheckBtn");
 const dailyLimitBanner = document.getElementById("dailyLimitBanner");
 const dailyLimitText = document.getElementById("dailyLimitText");
 
@@ -17,13 +23,9 @@ const resultGate = document.getElementById("resultGate");
 const resultCard = document.querySelector(".result-card");
 const resultActions = document.querySelector(".result-actions");
 
-const cameraPermissionText = document.getElementById("cameraPermissionText");
-const cameraVideo = document.getElementById("cameraVideo");
-const requestCameraBtn = document.getElementById("requestCameraBtn");
-const captureBtn = document.getElementById("captureBtn");
-const retakeBtn = document.getElementById("retakeBtn");
-const cameraFallbackInput = document.getElementById("cameraFallbackInput");
-const fallbackCameraBtn = document.getElementById("fallbackCameraBtn");
+const uploadArea = document.getElementById("uploadArea");
+const uploadGuide = document.getElementById("uploadGuide");
+const photoInput = document.getElementById("photoInput");
 const preview = document.getElementById("preview");
 const analyzePreview = document.getElementById("analyzePreview");
 const analyzePlaceholder = document.getElementById("analyzePlaceholder");
@@ -38,14 +40,12 @@ const scoreNode = document.getElementById("score");
 const scoreCircle = document.querySelector(".score-circle");
 const rankNode = document.getElementById("rank");
 const typeNode = document.getElementById("type");
-const commentNode = document.getElementById("comment");
-const tagsNode = document.getElementById("tags");
-const cleanVal = document.getElementById("cleanVal");
-const impactVal = document.getElementById("impactVal");
-const balanceVal = document.getElementById("balanceVal");
-const cleanBar = document.getElementById("cleanBar");
-const impactBar = document.getElementById("impactBar");
-const balanceBar = document.getElementById("balanceBar");
+const shapeVal = document.getElementById("shapeVal");
+const sizeVal = document.getElementById("sizeVal");
+const skinVal = document.getElementById("skinVal");
+const shapeBar = document.getElementById("shapeBar");
+const sizeBar = document.getElementById("sizeBar");
+const skinBar = document.getElementById("skinBar");
 const timestampNode = document.getElementById("timestamp");
 
 const DAILY_LIMIT_KEY = "charmscope_last_diagnosis_date";
@@ -57,7 +57,6 @@ let currentScreen = "welcome";
 let currentResult = null;
 let pendingResult = null;
 let resultUnlocked = false;
-let cameraStream = null;
 
 const resultPatterns = [
   {
@@ -181,6 +180,10 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
 function pickRandom(list) {
   return list[randomInt(0, list.length - 1)];
 }
@@ -239,9 +242,9 @@ function nowString() {
 }
 
 function rankFromScore(score) {
-  if (score >= 76) return "RANK S";
-  if (score >= 68) return "RANK A";
-  if (score >= 58) return "RANK B";
+  if (score >= 71) return "RANK S";
+  if (score >= 63) return "RANK A";
+  if (score >= 55) return "RANK B";
   return "RANK C";
 }
 
@@ -299,14 +302,10 @@ function updateDailyLimitUI() {
 }
 
 function setScreen(name) {
-  const previous = currentScreen;
   currentScreen = name;
   screens.forEach((screen) => {
     screen.classList.toggle("active", screen.dataset.screen === name);
   });
-  if (previous === "photo" && name !== "photo") {
-    stopCameraStream();
-  }
 }
 
 function openNoticeModal() {
@@ -325,117 +324,44 @@ function closeNoticeModal() {
   document.body.classList.remove("modal-open");
 }
 
+function updateAnalyzeCheckState() {
+  const ok = checkOwnPhoto.checked && checkNoFilter.checked && checkFaceVisible.checked;
+  confirmAnalyzeCheckBtn.disabled = !ok;
+}
+
+function openAnalyzeCheckModal() {
+  if (analyzeBtn.disabled) return;
+  checkOwnPhoto.checked = false;
+  checkNoFilter.checked = false;
+  checkFaceVisible.checked = false;
+  updateAnalyzeCheckState();
+  analyzeCheckModal.hidden = false;
+  document.body.classList.add("modal-open");
+}
+
+function closeAnalyzeCheckModal() {
+  analyzeCheckModal.hidden = true;
+  document.body.classList.remove("modal-open");
+}
+
 function validateInput() {
   const hasPhoto = !preview.hidden && Boolean(preview.src);
   const hasName = userName.value.trim().length > 0;
   analyzeBtn.disabled = !(hasPhoto && hasName);
 }
 
-function stopCameraStream() {
-  if (!cameraStream) return;
-  cameraStream.getTracks().forEach((track) => track.stop());
-  cameraStream = null;
-  if (cameraVideo) cameraVideo.srcObject = null;
-}
-
-async function startCamera() {
-  if (!cameraVideo) return;
-
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    if (cameraPermissionText) {
-      cameraPermissionText.textContent =
-        "この端末ではカメラAPIが利用できません。下のボタンからカメラ起動を試してください。";
-    }
-    return;
-  }
-
-  stopCameraStream();
-
-  try {
-    let stream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          facingMode: { exact: "user" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      });
-    } catch (_strictError) {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          facingMode: { ideal: "user" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      });
-    }
-
-    cameraStream = stream;
-    cameraVideo.srcObject = stream;
-    cameraVideo.hidden = false;
-    preview.hidden = true;
-    captureBtn.disabled = false;
-    retakeBtn.hidden = true;
-
-    if (cameraPermissionText) {
-      cameraPermissionText.textContent =
-        "カメラアクセスを許可ありがとうございます。内カメラで撮影して進んでください。";
-    }
-
-    await cameraVideo.play();
-  } catch (error) {
-    captureBtn.disabled = true;
-    if (cameraPermissionText) {
-      if (error && error.name === "NotAllowedError") {
-        cameraPermissionText.textContent =
-          "カメラアクセスが拒否されました。ブラウザ設定でカメラを許可してから再試行してください。";
-      } else {
-        cameraPermissionText.textContent =
-          "カメラを起動できませんでした。通信環境とブラウザ設定を確認し、再試行してください。";
-      }
-    }
-  }
-}
-
-function setCapturedPhoto(src) {
-  stopCameraStream();
-  preview.src = src;
-  preview.hidden = false;
-  if (cameraVideo) cameraVideo.hidden = true;
-  analyzePreview.src = src;
-  analyzePreview.hidden = false;
-  analyzePlaceholder.hidden = true;
-  captureBtn.disabled = true;
-  retakeBtn.hidden = false;
-  validateInput();
-}
-
-function capturePhoto() {
-  if (!cameraVideo || !cameraStream) return;
-  const width = cameraVideo.videoWidth;
-  const height = cameraVideo.videoHeight;
-  if (!width || !height) return;
-
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
-
-  ctx.drawImage(cameraVideo, 0, 0, width, height);
-  const src = canvas.toDataURL("image/jpeg", 0.95);
-  setCapturedPhoto(src);
-  stopCameraStream();
-}
-
 function updatePreview(file) {
   if (!file || !file.type.startsWith("image/")) return;
   const reader = new FileReader();
   reader.onload = () => {
-    setCapturedPhoto(String(reader.result));
+    const src = String(reader.result);
+    preview.src = src;
+    preview.hidden = false;
+    uploadGuide.hidden = true;
+    analyzePreview.src = src;
+    analyzePreview.hidden = false;
+    analyzePlaceholder.hidden = true;
+    validateInput();
   };
   reader.readAsDataURL(file);
 }
@@ -463,10 +389,17 @@ function markPhase(progress) {
 
 function randomResult(name) {
   const pattern = pickRandom(resultPatterns);
-  const score = randomInt(48, 83);
-  const clean = randomInt(42, 98);
-  const impact = randomInt(40, 98);
-  const balance = randomInt(43, 97);
+  const base = Math.random() ** 1.35;
+  const baseMetric = Math.round(25 + base * 70);
+  const shapePosition = clamp(baseMetric + randomInt(-14, 14), 1, 100);
+  const sizeFirmness = clamp(baseMetric + randomInt(-14, 14), 1, 100);
+  const skinQuality = clamp(baseMetric + randomInt(-14, 14), 1, 100);
+
+  const weighted =
+    shapePosition * 0.36 +
+    sizeFirmness * 0.32 +
+    skinQuality * 0.32;
+  const score = clamp(Math.round(35 + (weighted / 100) * 40 + randomInt(-2, 2)), 35, 75);
 
   return {
     name,
@@ -475,9 +408,9 @@ function randomResult(name) {
     type: pattern.type,
     comment: pattern.comment,
     tags: [...pattern.tags],
-    clean,
-    impact,
-    balance,
+    shapePosition,
+    sizeFirmness,
+    skinQuality,
     time: nowString(),
   };
 }
@@ -490,16 +423,15 @@ function renderResult(result) {
   }
   rankNode.textContent = result.rank;
   typeNode.textContent = result.type;
-  commentNode.textContent = result.comment;
   timestampNode.textContent = result.time;
 
-  cleanVal.textContent = "0";
-  impactVal.textContent = "0";
-  balanceVal.textContent = "0";
+  shapeVal.textContent = "0";
+  sizeVal.textContent = "0";
+  skinVal.textContent = "0";
 
-  cleanBar.style.width = "0%";
-  impactBar.style.width = "0%";
-  balanceBar.style.width = "0%";
+  shapeBar.style.width = "0%";
+  sizeBar.style.width = "0%";
+  skinBar.style.width = "0%";
 
   animateNumber(0, result.score, 860, (value) => {
     scoreNode.textContent = String(value);
@@ -508,27 +440,21 @@ function renderResult(result) {
     }
   });
 
-  animateNumber(0, result.clean, 920, (value) => {
-    cleanVal.textContent = String(value);
-    cleanBar.style.width = `${value}%`;
+  animateNumber(0, result.shapePosition, 920, (value) => {
+    shapeVal.textContent = String(value);
+    shapeBar.style.width = `${value}%`;
   });
 
-  animateNumber(0, result.impact, 980, (value) => {
-    impactVal.textContent = String(value);
-    impactBar.style.width = `${value}%`;
+  animateNumber(0, result.sizeFirmness, 980, (value) => {
+    sizeVal.textContent = String(value);
+    sizeBar.style.width = `${value}%`;
   });
 
-  animateNumber(0, result.balance, 1040, (value) => {
-    balanceVal.textContent = String(value);
-    balanceBar.style.width = `${value}%`;
+  animateNumber(0, result.skinQuality, 1040, (value) => {
+    skinVal.textContent = String(value);
+    skinBar.style.width = `${value}%`;
   });
 
-  tagsNode.innerHTML = "";
-  result.tags.forEach((tag) => {
-    const li = document.createElement("li");
-    li.textContent = tag;
-    tagsNode.appendChild(li);
-  });
 }
 
 function setupResultGate() {
@@ -574,29 +500,59 @@ function runAnalysis() {
   progressFill.style.width = "1%";
   progressText.textContent = "初期化しています...";
 
-  const minDuration = randomInt(14000, 24000);
-  const maxDuration = minDuration + randomInt(7000, 13000);
+  const targetDuration = randomInt(5500, 8000);
   const startedAt = Date.now();
-  let progress = 0;
+  let progress = randomInt(1, 4);
   let finalized = false;
 
   function tick() {
     if (!analyzing) return;
     const elapsed = Date.now() - startedAt;
-    const hardFinish = elapsed >= maxDuration;
-    const canSoftFinish = elapsed >= minDuration && progress >= 97 && Math.random() < 0.34;
+    const hardFinish = elapsed >= targetDuration;
 
-    if (hardFinish || canSoftFinish) {
+    if (hardFinish) {
       progress = 100;
     } else {
-      let step = randomInt(1, 6);
-      if (progress >= 86) step = randomInt(0, 3);
-      if (elapsed > 3500 && Math.random() < 0.17) step = randomInt(0, 2);
-      if (elapsed > 9000 && Math.random() < 0.12) step = 0;
+      const ratio = Math.min(1, elapsed / targetDuration);
+      const baseCurve = ratio ** 0.97;
+      const wave = Math.sin(elapsed / 300) * 0.85 + Math.sin(elapsed / 130) * 0.36;
+      const noise = (Math.random() - 0.5) * 0.9;
+      const targetProgress = Math.min(99, Math.max(1, baseCurve * 99 + wave + noise));
+
+      const diff = Math.max(0, targetProgress - progress);
+      let step = diff * (0.16 + Math.random() * 0.24) + Math.random() * 0.34;
+
+      let maxStep = 2.7;
+      let stallChance = 0.05;
+      if (progress >= 20 && progress < 45) {
+        maxStep = 2.1;
+        stallChance = 0.08;
+      } else if (progress >= 45 && progress < 70) {
+        maxStep = 1.45;
+        stallChance = 0.12;
+      } else if (progress >= 70 && progress < 88) {
+        maxStep = 0.92;
+        stallChance = 0.18;
+      } else if (progress >= 88) {
+        maxStep = 0.52;
+        stallChance = 0.24;
+      }
+
+      if (Math.random() < stallChance) {
+        step *= 0.18 + Math.random() * 0.22;
+      }
+
+      step = Math.max(0.06, Math.min(maxStep, step));
       progress = Math.min(99, progress + step);
+
+      const remainingTime = targetDuration - elapsed;
+      if (remainingTime < 1200) {
+        const catchupFloor = 99 - (remainingTime / 1200) * 13;
+        progress = Math.max(progress, catchupFloor);
+      }
     }
 
-    const displayProgress = Math.min(100, Math.floor(progress));
+    const displayProgress = Math.floor(progress);
     progressFill.style.width = `${displayProgress}%`;
     markPhase(displayProgress);
 
@@ -615,7 +571,17 @@ function runAnalysis() {
       return;
     }
 
-    progressTimer = setTimeout(tick, randomInt(70, 230));
+    const nextDelay =
+      progress < 20
+        ? randomInt(45, 90)
+        : progress < 45
+          ? randomInt(65, 125)
+          : progress < 70
+            ? randomInt(90, 165)
+            : progress < 88
+              ? randomInt(120, 205)
+              : randomInt(160, 245);
+    progressTimer = setTimeout(tick, nextDelay);
   }
 
   tick();
@@ -701,27 +667,10 @@ async function saveResult() {
     ctx.font = "700 42px 'M PLUS Rounded 1c'";
     ctx.fillText(currentResult.type, 120, 675);
 
-    ctx.fillStyle = "#625985";
-    ctx.font = "500 30px 'M PLUS Rounded 1c'";
-    const comment = currentResult.comment;
-    const lines = [];
-    let line = "";
-    for (const char of comment) {
-      const test = line + char;
-      if (ctx.measureText(test).width > 820) {
-        lines.push(line);
-        line = char;
-      } else {
-        line = test;
-      }
-    }
-    if (line) lines.push(line);
-    lines.slice(0, 3).forEach((l, i) => ctx.fillText(l, 120, 735 + i * 44));
-
     const bars = [
-      ["清潔感", currentResult.clean, 900],
-      ["印象強度", currentResult.impact, 980],
-      ["バランス", currentResult.balance, 1060],
+      ["形状と位置（上向き・左右対称）", currentResult.shapePosition, 820],
+      ["サイズとハリ（大きさ・ハリ感）", currentResult.sizeFirmness, 900],
+      ["肌質と色（明るさ・透明感）", currentResult.skinQuality, 980],
     ];
     ctx.font = "600 28px 'M PLUS Rounded 1c'";
     bars.forEach(([label, value, y]) => {
@@ -739,7 +688,7 @@ async function saveResult() {
 
     ctx.fillStyle = "#8e84af";
     ctx.font = "500 24px 'M PLUS Rounded 1c'";
-    ctx.fillText(`生成時刻: ${currentResult.time}`, 120, 1170);
+    ctx.fillText(`生成時刻: ${currentResult.time}`, 120, 1110);
 
     const safeName = currentResult.name.replace(/[\\/:*?\"<>|]/g, "_");
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -822,6 +771,9 @@ cancelNoticeBtn.addEventListener("click", closeNoticeModal);
 noticeModal.addEventListener("click", (event) => {
   if (event.target === noticeModal) closeNoticeModal();
 });
+analyzeCheckModal.addEventListener("click", (event) => {
+  if (event.target === analyzeCheckModal) closeAnalyzeCheckModal();
+});
 
 agreeCheck.addEventListener("change", () => {
   confirmNoticeBtn.disabled = !agreeCheck.checked;
@@ -834,37 +786,46 @@ confirmNoticeBtn.addEventListener("click", () => {
     return;
   }
   setScreen("photo");
-  startCamera();
 });
 
 backToWelcomeBtn.addEventListener("click", () => {
   setScreen("welcome");
 });
 
-requestCameraBtn.addEventListener("click", startCamera);
-captureBtn.addEventListener("click", capturePhoto);
-retakeBtn.addEventListener("click", () => {
-  preview.hidden = true;
-  preview.src = "";
-  analyzePreview.hidden = true;
-  analyzePreview.src = "";
-  analyzePlaceholder.hidden = false;
-  validateInput();
-  startCamera();
-});
-cameraFallbackInput.addEventListener("change", (event) => {
+photoInput.addEventListener("change", (event) => {
   updatePreview(event.target.files?.[0]);
 });
-fallbackCameraBtn.addEventListener("click", () => {
-  cameraFallbackInput.click();
+["dragenter", "dragover"].forEach((name) => {
+  uploadArea.addEventListener(name, (event) => {
+    event.preventDefault();
+    uploadArea.classList.add("dragging");
+  });
+});
+
+["dragleave", "drop"].forEach((name) => {
+  uploadArea.addEventListener(name, (event) => {
+    event.preventDefault();
+    uploadArea.classList.remove("dragging");
+  });
+});
+
+uploadArea.addEventListener("drop", (event) => {
+  updatePreview(event.dataTransfer?.files?.[0]);
 });
 
 userName.addEventListener("input", validateInput);
-analyzeBtn.addEventListener("click", runAnalysis);
+analyzeBtn.addEventListener("click", openAnalyzeCheckModal);
+checkOwnPhoto.addEventListener("change", updateAnalyzeCheckState);
+checkNoFilter.addEventListener("change", updateAnalyzeCheckState);
+checkFaceVisible.addEventListener("change", updateAnalyzeCheckState);
+cancelAnalyzeCheckBtn.addEventListener("click", closeAnalyzeCheckModal);
+confirmAnalyzeCheckBtn.addEventListener("click", () => {
+  closeAnalyzeCheckModal();
+  runAnalysis();
+});
 saveBtn.addEventListener("click", saveResult);
 shareBtn.addEventListener("click", shareSite);
 if (unlockShareBtn) unlockShareBtn.addEventListener("click", shareSite);
-window.addEventListener("beforeunload", stopCameraStream);
 
 setScreen("welcome");
 validateInput();
