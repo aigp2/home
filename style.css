@@ -215,6 +215,15 @@ body.modal-open {
   grid-template-rows: min-content minmax(0, 1fr);
 }
 
+.screen[data-screen="photo"] .upload {
+  height: 100%;
+  min-height: 0;
+}
+
+.screen[data-screen="analyze"] .analysis-stage {
+  min-height: 0;
+}
+
 .screen h2 {
   margin: 0;
   font-size: clamp(1.92rem, 4.2vw, 2.7rem);
@@ -647,6 +656,7 @@ body.modal-open {
   position: relative;
   min-height: clamp(150px, 25dvh, 220px);
   height: 100%;
+  max-height: 35dvh;
   border-radius: 17px;
   border: 1px solid rgba(161, 141, 203, 0.44);
   overflow: hidden;
@@ -769,7 +779,22 @@ body.modal-open {
   display: block;
   width: 1%;
   height: 100%;
-  background: linear-gradient(90deg, #e878a4, #ab8de4);
+  position: relative;
+  background: linear-gradient(100deg, #e878a4 0%, #ab8de4 45%, #7aa9ea 100%);
+  background-size: 220% 100%;
+  box-shadow: 0 0 12px rgba(173, 125, 227, 0.45);
+  transition: width 0.14s cubic-bezier(0.18, 0.82, 0.2, 1);
+  animation: progress-flow 1.2s linear infinite, progress-breathe 1.7s ease-in-out infinite;
+}
+
+#progressFill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+  mix-blend-mode: screen;
+  opacity: 0.78;
+  animation: progress-shine 0.95s linear infinite;
 }
 
 .phase-track {
@@ -778,6 +803,7 @@ body.modal-open {
   list-style: none;
   display: grid;
   gap: 0.34rem;
+  overflow: hidden;
 }
 
 .phase-track li {
@@ -1004,8 +1030,16 @@ body.modal-open {
   margin: 0.36rem 0 0.12rem;
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.55rem;
   color: #6e638f;
   font-size: 0.82rem;
+}
+
+.bars .metric-label {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
 }
 
 .bars div {
@@ -1127,6 +1161,30 @@ body.modal-open {
   color: #6f6492;
   font-size: 0.79rem;
   line-height: 1.45;
+}
+
+.analyze-check-list {
+  margin-top: 0.58rem;
+  display: grid;
+  gap: 0.44rem;
+}
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.48rem;
+  border-radius: 12px;
+  border: 1px solid rgba(168, 142, 210, 0.32);
+  background: rgba(255, 255, 255, 0.76);
+  padding: 0.5rem 0.62rem;
+  color: #4d406f;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.check-item input {
+  margin-top: 0.14rem;
+  flex: none;
 }
 
 .agree {
@@ -1409,6 +1467,34 @@ body.modal-open {
   }
 }
 
+@keyframes progress-flow {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes progress-breathe {
+  0%,
+  100% {
+    filter: saturate(1) brightness(1);
+  }
+  50% {
+    filter: saturate(1.22) brightness(1.1);
+  }
+}
+
+@keyframes progress-shine {
+  from {
+    transform: translateX(-40%);
+  }
+  to {
+    transform: translateX(80%);
+  }
+}
+
 @keyframes footer-float {
   0%,
   100% {
@@ -1515,6 +1601,7 @@ body.modal-open {
 
   .upload {
     min-height: clamp(132px, 21dvh, 170px);
+    max-height: 31dvh;
   }
 
   .camera-panel {
@@ -1559,6 +1646,7 @@ body.modal-open {
 
   .visual-core {
     min-height: clamp(118px, 22dvh, 160px);
+    max-height: 30dvh;
   }
 
   .phase-track {
@@ -1616,6 +1704,17 @@ body.modal-open {
     line-height: 1.38;
   }
 
+  .analyze-check-list {
+    margin-top: 0.48rem;
+    gap: 0.34rem;
+  }
+
+  .check-item {
+    padding: 0.42rem 0.5rem;
+    font-size: 0.74rem;
+    line-height: 1.35;
+  }
+
   .modal-actions {
     margin-top: 0.52rem;
     gap: 0.36rem;
@@ -1641,6 +1740,7 @@ body.modal-open {
 
   .upload {
     min-height: clamp(112px, 19dvh, 150px);
+    max-height: 28dvh;
   }
 
   .camera-stage {
@@ -1649,6 +1749,7 @@ body.modal-open {
 
   .visual-core {
     min-height: clamp(122px, 21dvh, 180px);
+    max-height: 28dvh;
   }
 
   .phase-track li {
