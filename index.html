@@ -54,28 +54,16 @@
         <section class="screen" data-screen="photo">
           <div class="section-head glass-panel">
             <h2>写真と名前を入力</h2>
-            <p>内カメラで撮影後、プレビューを確認して名前を入力します。</p>
+            <p>無加工・正面に近い写真を推奨します。</p>
           </div>
 
-          <div class="camera-panel glass-panel" id="cameraPanel">
-            <p class="camera-permission" id="cameraPermissionText">
-              iPhoneでの利用時はカメラアクセスを求められたら「許可」を選択してください。
-            </p>
-            <div class="camera-stage">
-              <video id="cameraVideo" autoplay muted playsinline hidden></video>
-              <img id="preview" alt="プレビュー" hidden />
-              <div class="camera-grid"></div>
-            </div>
-            <div class="camera-actions">
-              <button class="btn-sub" id="requestCameraBtn" type="button">カメラを開始</button>
-              <button class="btn-main" id="captureBtn" type="button" disabled>撮影する</button>
-              <button class="btn-sub" id="retakeBtn" type="button" hidden>撮り直す</button>
-            </div>
-            <input id="cameraFallbackInput" type="file" accept="image/*" capture="user" hidden />
-            <button class="camera-fallback" id="fallbackCameraBtn" type="button">
-              カメラが開かない場合はこちら
-            </button>
-          </div>
+          <label class="upload glass-panel" id="uploadArea">
+            <input id="photoInput" type="file" accept="image/*" />
+            <span class="upload-guide" id="uploadGuide">
+              タップして写真を選ぶ<br /><small>JPG / PNG / HEIC</small>
+            </span>
+            <img id="preview" alt="プレビュー" hidden />
+          </label>
 
           <label class="name-field glass-panel">
             <span>あなたの名前（本名）</span>
@@ -146,15 +134,13 @@
               <p class="target">診断対象: <span id="resultName">-</span></p>
               <p class="rank" id="rank">RANK -</p>
               <h3 id="type">-</h3>
-              <p id="comment">-</p>
-              <ul id="tags" class="tag-list"></ul>
               <div class="bars">
-                <p>清潔感 <span id="cleanVal">0</span></p>
-                <div><i id="cleanBar"></i></div>
-                <p>印象強度 <span id="impactVal">0</span></p>
-                <div><i id="impactBar"></i></div>
-                <p>バランス <span id="balanceVal">0</span></p>
-                <div><i id="balanceBar"></i></div>
+                <p><span class="metric-label">形状と位置（上向き・左右対称）</span><span id="shapeVal">0</span></p>
+                <div><i id="shapeBar"></i></div>
+                <p><span class="metric-label">サイズとハリ（大きさ・ハリ感）</span><span id="sizeVal">0</span></p>
+                <div><i id="sizeBar"></i></div>
+                <p><span class="metric-label">肌質と色（明るさ・透明感）</span><span id="skinVal">0</span></p>
+                <div><i id="skinBar"></i></div>
               </div>
               <p class="stamp">生成時刻: <span id="timestamp"></span></p>
             </div>
@@ -178,20 +164,20 @@
         <p class="modal-chip">BEFORE START</p>
         <h3>診断前のご案内</h3>
         <p class="modal-lead">
-          気持ちよく使えるよう、以下を確認してから進んでください。
+          解析前に以下3点を確認してください。
         </p>
         <div class="notice-points">
           <article>
-            <h4>1日1回制限</h4>
-            <p>1日1回制度を導入予定です。現在は試験段階のため制限を停止しています。</p>
+            <h4>①写真は本当にあなたのものか？</h4>
+            <p>本人以外の写真を使わず、あなた自身の写真を選んでください。</p>
           </article>
           <article>
-            <h4>写真について</h4>
-            <p>無加工・正面に近い写真を推奨します。</p>
+            <h4>②写真は無加工か？</h4>
+            <p>フィルターや加工アプリを使わない写真を使用してください。</p>
           </article>
           <article>
-            <h4>結果について</h4>
-            <p>同じ写真でも診断タイミングにより結果が変動する場合があります。</p>
+            <h4>③写真に顔はしっかりと映っているか？</h4>
+            <p>顔全体が見える、明るく鮮明な写真でお試しください。</p>
           </article>
         </div>
         <label class="agree">
@@ -201,6 +187,32 @@
         <div class="modal-actions">
           <button class="btn-sub" id="cancelNoticeBtn">閉じる</button>
           <button class="btn-main" id="confirmNoticeBtn" disabled>同意して進む</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="analyzeCheckModal" hidden>
+      <div class="modal-card">
+        <p class="modal-chip">CONFIRM</p>
+        <h3>確認</h3>
+        <p class="modal-lead">解析前に以下3点を確認してください。</p>
+        <div class="analyze-check-list">
+          <label class="check-item">
+            <input type="checkbox" id="checkOwnPhoto" />
+            <span>①写真は本当にあなたのものか？</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="checkNoFilter" />
+            <span>②写真は無加工か？</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="checkFaceVisible" />
+            <span>③写真に顔はしっかりと映っているか？</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-sub" id="cancelAnalyzeCheckBtn">戻る</button>
+          <button class="btn-main" id="confirmAnalyzeCheckBtn" disabled>解析を開始</button>
         </div>
       </div>
     </div>
