@@ -60,18 +60,18 @@
           <label class="upload glass-panel" id="uploadArea">
             <input id="photoInput" type="file" accept="image/*" />
             <span class="upload-guide" id="uploadGuide">
-              ここをタップし、「写真を撮る」を選択してください<br /><small>M字に開脚をし、全体が映るようにしてください。</small>
+              写真をアップロード<br /><small>ここをタップし、「写真ライブラリ」から撮影した写真をアップロード</small>
             </span>
             <img id="preview" alt="プレビュー" hidden />
           </label>
 
           <label class="name-field glass-panel">
-            <span>あなたの名前を入力してください（ニックネーム可能）</span>
+            <span>ニックネームを入力してください</span>
             <input
               id="userName"
               type="text"
               maxlength="20"
-              placeholder="ここに名前を入力"
+              placeholder="ここに入力"
               autocomplete="name"
             />
           </label>
@@ -122,8 +122,8 @@
             <h2>診断結果</h2>
           </div>
           <div class="result-gate glass-panel" id="resultGate">
-            <p>結果を表示するには、このサイトを共有してください。</p>
-            <button class="btn-main" id="unlockShareBtn">共有して結果を表示</button>
+            <p>結果を表示するには、このサイトを友達に共有してください。</p>
+            <button class="btn-main" id="unlockShareBtn">共有して結果を表示！</button>
           </div>
           <article class="result-card glass-panel">
             <div class="score-circle">
@@ -162,22 +162,22 @@
     <div class="modal" id="noticeModal" hidden>
       <div class="modal-card">
         <p class="modal-chip">BEFORE START</p>
-        <h3>診断前のご案内</h3>
+        <h3>診断前に以下の条件を満たした写真を撮影してください</h3>
         <p class="modal-lead">
-          診断精度を上げるため、以下のような写真を使ってください。
+          撮影完了後、次へ進んでください。
         </p>
         <div class="notice-points">
           <article>
-            <h4>推奨される写真</h4>
-            <p>正面を向き、M字に開脚し、体全体がはっきり写っている写真。</p>
+            <h4>全裸での撮影</h4>
+            <p>全裸でM字に開脚をし、顔から胸、性器まで全体を映します。</p>
           </article>
           <article>
             <h4>明るさと画質</h4>
             <p>明るい場所で撮影し、ブレや強い影が少ない鮮明な写真を使ってください。</p>
           </article>
           <article>
-            <h4>避ける写真</h4>
-            <p>加工フィルターあり・マスク着用・顔の一部欠け・複数人写りの写真は非推奨です。</p>
+            <h4>写真について</h4>
+            <p>診断に使用する写真は暗号化されるため、誰一人閲覧することはできません。</p>
           </article>
         </div>
         <label class="agree">
@@ -199,15 +199,15 @@
         <div class="analyze-check-list">
           <label class="check-item">
             <input type="checkbox" id="checkOwnPhoto" />
-            <span>①M字に開脚し、体全体がはっきり写っていますか？</span>
+            <span>①全裸でM字に開脚していますか？</span>
           </label>
           <label class="check-item">
             <input type="checkbox" id="checkNoFilter" />
-            <span>②ブレや強い影はありませんか？</span>
+            <span>②体全体が映っていますか？</span>
           </label>
           <label class="check-item">
             <input type="checkbox" id="checkFaceVisible" />
-            <span>③写真は無加工ですか？</span>
+            <span>③ブレや強い影はありませんか？</span>
           </label>
         </div>
         <div class="modal-actions">
