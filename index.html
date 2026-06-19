@@ -32,17 +32,17 @@
       <section class="screen-wrap">
         <section class="screen active" data-screen="welcome">
           <div class="welcome-hero glass-panel">
-            <p class="welcome-kicker">TODAY'S FACE CHECK</p>
-            <h2>今日の可愛さ、<br />スコアで残そう。</h2>
+            <p class="welcome-kicker">CHARM SCOPE OFFICIAL</p>
+            <h2>あなたの体、<br />偏差値でわかる。</h2>
             <p>
-              写真を選んで、あなたの雰囲気タイプをチェック。<br />1日1回制度は運用中ですが、現在は試験段階のため制限を停止しています。
+              写真を撮るだけで、AIがあなたの体を数値化。<br />見た目もサイズも一目で診断。
             </p>
           </div>
           <div class="daily-limit-banner glass-panel" id="dailyLimitBanner">
-            <p id="dailyLimitText">この診断は1日1回までです。</p>
+            <p id="dailyLimitText">この診断は1か月に1回のみ利用できます。</p>
           </div>
           <div class="start-action glass-panel">
-            <button class="btn-main" id="startBtn">今すぐ診断する</button>
+            <button class="btn-main" id="startBtn">完全無料で今すぐ診断</button>
           </div>
           <div class="start-legal">
             <span>© 2026 Charm Scope</span>
@@ -60,18 +60,18 @@
           <label class="upload glass-panel" id="uploadArea">
             <input id="photoInput" type="file" accept="image/*" />
             <span class="upload-guide" id="uploadGuide">
-              タップして写真を選ぶ<br /><small>JPG / PNG / HEIC</small>
+              ここをタップし、「写真を撮る」を選択してください<br /><small>M字に開脚をし、全体が映るようにしてください。</small>
             </span>
             <img id="preview" alt="プレビュー" hidden />
           </label>
 
           <label class="name-field glass-panel">
-            <span>あなたの名前（本名）</span>
+            <span>あなたの名前を入力してください（ニックネーム可能）</span>
             <input
               id="userName"
               type="text"
               maxlength="20"
-              placeholder="例: 山田 太郎"
+              placeholder="ここに名前を入力"
               autocomplete="name"
             />
           </label>
@@ -109,7 +109,7 @@
 
             <ul class="phase-track">
               <li data-phase="0">画像品質を確認</li>
-              <li data-phase="1">顔領域を抽出</li>
+              <li data-phase="1">診断領域を抽出</li>
               <li data-phase="2">特徴ベクトルを生成</li>
               <li data-phase="3">モデル推定を実行</li>
               <li data-phase="4">結果を整形</li>
@@ -133,13 +133,13 @@
             <div class="result-main">
               <p class="target">診断対象: <span id="resultName">-</span></p>
               <p class="rank" id="rank">RANK -</p>
-              <h3 id="type">-</h3>
+              <p class="result-insight" id="insightText">-</p>
               <div class="bars">
-                <p><span class="metric-label">形状と位置（上向き・左右対称）</span><span id="shapeVal">0</span></p>
+                <p><span class="metric-label">体全体の形状と位置（配置・左右対称）</span><span id="shapeVal">0</span></p>
                 <div><i id="shapeBar"></i></div>
-                <p><span class="metric-label">サイズとハリ（大きさ・ハリ感）</span><span id="sizeVal">0</span></p>
+                <p><span class="metric-label">胸のサイズとハリ（大きさ・ハリ感）</span><span id="sizeVal">0</span></p>
                 <div><i id="sizeBar"></i></div>
-                <p><span class="metric-label">肌質と色（明るさ・透明感）</span><span id="skinVal">0</span></p>
+                <p><span class="metric-label">全体の肌質と色（明るさ・透明感）</span><span id="skinVal">0</span></p>
                 <div><i id="skinBar"></i></div>
               </div>
               <p class="stamp">生成時刻: <span id="timestamp"></span></p>
@@ -164,20 +164,20 @@
         <p class="modal-chip">BEFORE START</p>
         <h3>診断前のご案内</h3>
         <p class="modal-lead">
-          解析前に以下3点を確認してください。
+          診断精度を上げるため、以下のような写真を使ってください。
         </p>
         <div class="notice-points">
           <article>
-            <h4>①写真は本当にあなたのものか？</h4>
-            <p>本人以外の写真を使わず、あなた自身の写真を選んでください。</p>
+            <h4>推奨される写真</h4>
+            <p>正面を向き、M字に開脚し、体全体がはっきり写っている写真。</p>
           </article>
           <article>
-            <h4>②写真は無加工か？</h4>
-            <p>フィルターや加工アプリを使わない写真を使用してください。</p>
+            <h4>明るさと画質</h4>
+            <p>明るい場所で撮影し、ブレや強い影が少ない鮮明な写真を使ってください。</p>
           </article>
           <article>
-            <h4>③写真に顔はしっかりと映っているか？</h4>
-            <p>顔全体が見える、明るく鮮明な写真でお試しください。</p>
+            <h4>避ける写真</h4>
+            <p>加工フィルターあり・マスク着用・顔の一部欠け・複数人写りの写真は非推奨です。</p>
           </article>
         </div>
         <label class="agree">
@@ -199,15 +199,15 @@
         <div class="analyze-check-list">
           <label class="check-item">
             <input type="checkbox" id="checkOwnPhoto" />
-            <span>①写真は本当にあなたのものか？</span>
+            <span>①M字に開脚し、体全体がはっきり写っていますか？</span>
           </label>
           <label class="check-item">
             <input type="checkbox" id="checkNoFilter" />
-            <span>②写真は無加工か？</span>
+            <span>②ブレや強い影はありませんか？</span>
           </label>
           <label class="check-item">
             <input type="checkbox" id="checkFaceVisible" />
-            <span>③写真に顔はしっかりと映っているか？</span>
+            <span>③写真は無加工ですか？</span>
           </label>
         </div>
         <div class="modal-actions">
